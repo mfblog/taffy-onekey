@@ -2,6 +2,8 @@
 
 set -e
 
+GH_PROXY="${GH_PROXY:-}"
+
 detect_os() {
     . '/etc/os-release'
     case "${ID}" in
@@ -33,7 +35,7 @@ get_latest_version() {
     if [ -n "$SPECIFIED_VERSION" ]; then
         VERSION="$SPECIFIED_VERSION"
     else
-        VERSION=$(curl -s https://api.github.com/repos/MetaCubeX/mihomo/releases/latest \
+        VERSION=$(curl -s "${GH_PROXY}https://api.github.com/repos/MetaCubeX/mihomo/releases/latest" \
             | grep tag_name \
             | cut -d ":" -f2 \
             | sed 's/\"//g;s/\,//g;s/\ //g;s/v//')
@@ -45,12 +47,12 @@ install_mihomo() {
     get_latest_version
 
     if [ "$OS" = "debian" ]; then
-        curl -Lo mihomo.deb "https://github.com/MetaCubeX/mihomo/releases/download/v${VERSION}/mihomo-linux-${ARCH}-v${VERSION}.deb"
+        curl -Lo mihomo.deb "${GH_PROXY}https://github.com/MetaCubeX/mihomo/releases/download/v${VERSION}/mihomo-linux-${ARCH}-v${VERSION}.deb"
         dpkg -i mihomo.deb
         rm mihomo.deb
 
         mkdir -p /etc/mihomo
-        wget -O /etc/mihomo/config.yaml https://raw.githubusercontent.com/uerax/taffy-onekey/refs/heads/master/config/Clash/config.yaml
+        wget -O /etc/mihomo/config.yaml "${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/refs/heads/master/config/Clash/config.yaml"
 
         cat > /etc/systemd/system/mihomo.service <<EOF
 [Unit]
@@ -76,12 +78,12 @@ EOF
         systemctl start mihomo
 
     elif [ "$OS" = "alpine" ]; then
-        curl -Lo mihomo.tar.gz "https://github.com/MetaCubeX/mihomo/releases/download/v${VERSION}/mihomo-linux-${ARCH}-v${VERSION}.tar.gz"
+        curl -Lo mihomo.tar.gz "${GH_PROXY}https://github.com/MetaCubeX/mihomo/releases/download/v${VERSION}/mihomo-linux-${ARCH}-v${VERSION}.tar.gz"
         tar -xzf mihomo.tar.gz -C /usr/bin/
         rm mihomo.tar.gz
 
         mkdir -p /etc/mihomo
-        wget -O /etc/mihomo/config.yaml https://raw.githubusercontent.com/uerax/taffy-onekey/refs/heads/master/config/Clash/config.yaml
+        wget -O /etc/mihomo/config.yaml "${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/refs/heads/master/config/Clash/config.yaml"
 
         # openrc init script
         cat > /etc/init.d/mihomo <<'EOF'
@@ -106,13 +108,13 @@ update_mihomo() {
     echo "Updating mihomo to version ${VERSION}..."
 
     if [ "$OS" = "debian" ]; then
-        curl -Lo mihomo.deb "https://github.com/MetaCubeX/mihomo/releases/download/v${VERSION}/mihomo-linux-${ARCH}-v${VERSION}.deb"
+        curl -Lo mihomo.deb "${GH_PROXY}https://github.com/MetaCubeX/mihomo/releases/download/v${VERSION}/mihomo-linux-${ARCH}-v${VERSION}.deb"
         dpkg -i mihomo.deb
         rm mihomo.deb
         systemctl daemon-reload
         systemctl restart mihomo
     elif [ "$OS" = "alpine" ]; then
-        curl -Lo mihomo.tar.gz "https://github.com/MetaCubeX/mihomo/releases/download/v${VERSION}/mihomo-linux-${ARCH}-v${VERSION}.tar.gz"
+        curl -Lo mihomo.tar.gz "${GH_PROXY}https://github.com/MetaCubeX/mihomo/releases/download/v${VERSION}/mihomo-linux-${ARCH}-v${VERSION}.tar.gz"
         tar -xzf mihomo.tar.gz -C /usr/bin
         rm mihomo.tar.gz
         rc-service mihomo restart

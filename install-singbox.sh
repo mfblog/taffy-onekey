@@ -2,6 +2,8 @@
 
 set -e -o pipefail
 
+GH_PROXY="${GH_PROXY:-}"
+
 ARCH_RAW=$(uname -m)
 case "${ARCH_RAW}" in
     'x86_64')    ARCH='amd64';;
@@ -12,7 +14,7 @@ case "${ARCH_RAW}" in
     *)          echo "Unsupported architecture: ${ARCH_RAW}"; exit 1;;
 esac
 
-VERSION=$(curl -fsSL https://api.github.com/repos/SagerNet/sing-box/releases/latest \
+VERSION=$(curl -fsSL "${GH_PROXY}https://api.github.com/repos/SagerNet/sing-box/releases/latest" \
     | grep tag_name \
     | cut -d ":" -f2 \
     | sed 's/\"//g;s/\,//g;s/\ //g;s/v//')
@@ -31,7 +33,7 @@ if [ -f /etc/os-release ]; then
 fi
 
 install_deb() {
-    curl -fLo sing-box.deb "https://github.com/SagerNet/sing-box/releases/download/v${VERSION}/sing-box_${VERSION}_linux_${ARCH}.deb"
+    curl -fLo sing-box.deb "${GH_PROXY}https://github.com/SagerNet/sing-box/releases/download/v${VERSION}/sing-box_${VERSION}_linux_${ARCH}.deb"
     if command -v sudo >/dev/null 2>&1 && [ "$(id -u)" -ne 0 ]; then
         sudo dpkg -i sing-box.deb
     else
@@ -51,7 +53,7 @@ install_alpine() {
         *) echo "Unsupported Alpine arch: ${ARCH}"; exit 1 ;;
     esac
     TB="sing-box-${VERSION}-linux-${TB_ARCH}.tar.gz"
-    curl -fLo "${TB}" "https://github.com/SagerNet/sing-box/releases/download/v${VERSION}/${TB}"
+    curl -fLo "${TB}" "${GH_PROXY}https://github.com/SagerNet/sing-box/releases/download/v${VERSION}/${TB}"
     tar -xzf "${TB}"
     install -m 755 "sing-box-${VERSION}-linux-${TB_ARCH}/sing-box" /usr/local/bin/sing-box
     rm -rf "${TB}" "sing-box-${VERSION}-linux-${TB_ARCH}"

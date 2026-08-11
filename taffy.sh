@@ -6,6 +6,21 @@ stty erase ^?
 
 version="v5.1.0"
 
+GH_PROXY="${GH_PROXY:-}"
+
+for _arg in "$@"; do
+    case "$_arg" in
+        -cn|--cn)
+            GH_PROXY="https://gh-proxy.com/"
+            ;;
+        --proxy=*)
+            GH_PROXY="${_arg#*=}"
+            ;;
+    esac
+done
+
+export GH_PROXY
+
 #fonts color
 Green="\033[32m"
 Red="\033[31m"
@@ -25,68 +40,68 @@ Warn="${Yellow}[警告]${Font}"
 OK="${Green}[OK]${Font}"
 Error="${Red}[错误]${Font}"
 
-bbr_config_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/BBR/sysctl.conf"
-ukonw_url="https://raw.githubusercontent.com/bakasine/rules/master/xray/uknow.txt"
+bbr_config_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/BBR/sysctl.conf"
+ukonw_url="${GH_PROXY}https://raw.githubusercontent.com/bakasine/rules/master/xray/uknow.txt"
 
-xray_install_url="https://github.com/uerax/taffy-onekey/raw/master/install-xray.sh"
+xray_install_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/install-xray.sh"
 
-xray_socks5_append_config_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Socks5/append.json"
+xray_socks5_append_config_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Socks5/append.json"
 
-xray_ss_config_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Shadowsocket/config.json"
-xray_ss_append_config_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Shadowsocket/append.json"
+xray_ss_config_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Shadowsocket/config.json"
+xray_ss_append_config_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Shadowsocket/append.json"
 
-xray_vless_reality_tcp_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/REALITY-TCP/config.json"
-xray_vless_reality_tcp_append_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/REALITY-TCP/append.json"
+xray_vless_reality_tcp_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/REALITY-TCP/config.json"
+xray_vless_reality_tcp_append_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/REALITY-TCP/append.json"
 
-xray_vless_reality_grpc_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/REALITY-GRPC/config.json"
-xray_vless_reality_grpc_append_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/REALITY-GRPC/append.json"
+xray_vless_reality_grpc_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/REALITY-GRPC/config.json"
+xray_vless_reality_grpc_append_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/REALITY-GRPC/append.json"
 
-xray_vless_reality_h2_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/REALITY-H2/config.json"
-vless_reality_h2_append_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/REALITY-H2/append.json"
+xray_vless_reality_h2_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/REALITY-H2/config.json"
+vless_reality_h2_append_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/REALITY-H2/append.json"
 
-xray_redirect_config_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Redirect/xray.json"
-xray_redirect_append_config_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Redirect/xray_ap.json"
+xray_redirect_config_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Redirect/xray.json"
+xray_redirect_append_config_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Redirect/xray_ap.json"
 
 # SINGBOX URL START
-singbox_install_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/install-singbox.sh"
+singbox_install_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/install-singbox.sh"
 singbox_cfg_path="/etc/sing-box"
 singbox_cfg="${singbox_cfg_path}/config.json"
 
 singbox_outbound=""
 
-singbox_ss_config_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Shadowsocket/singbox.json"
-singbox_ss_append_config_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Shadowsocket/singbox_ap.json"
+singbox_ss_config_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Shadowsocket/singbox.json"
+singbox_ss_append_config_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Shadowsocket/singbox_ap.json"
 
-singbox_hysteria2_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Hysteria2/singbox.json"
-singbox_hysteria2_append_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Hysteria2/singbox_ap.json"
-singbox_anytls_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/AnyTLS/singbox.json"
-singbox_anytls_append_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/AnyTLS/singbox_ap.json"
-singbox_vless_reality_h2_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/REALITY-H2/singbox.json"
-singbox_vless_reality_h2_append_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/REALITY-H2/singbox_ap.json"
-singbox_vless_reality_grpc_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/REALITY-GRPC/singbox.json"
-singbox_vless_reality_grpc_append_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/REALITY-GRPC/singbox_ap.json"
-singbox_vless_reality_tcp_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/REALITY-TCP/singbox.json"
-singbox_vless_reality_tcp_append_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/REALITY-TCP/singbox_ap.json"
+singbox_hysteria2_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Hysteria2/singbox.json"
+singbox_hysteria2_append_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Hysteria2/singbox_ap.json"
+singbox_anytls_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/AnyTLS/singbox.json"
+singbox_anytls_append_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/AnyTLS/singbox_ap.json"
+singbox_vless_reality_h2_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/REALITY-H2/singbox.json"
+singbox_vless_reality_h2_append_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/REALITY-H2/singbox_ap.json"
+singbox_vless_reality_grpc_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/REALITY-GRPC/singbox.json"
+singbox_vless_reality_grpc_append_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/REALITY-GRPC/singbox_ap.json"
+singbox_vless_reality_tcp_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/REALITY-TCP/singbox.json"
+singbox_vless_reality_tcp_append_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/REALITY-TCP/singbox_ap.json"
 
-singbox_redirect_config_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Redirect/singbox.json"
-singbox_redirect_append_config_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Redirect/singbox_ap.json"
+singbox_redirect_config_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Redirect/singbox.json"
+singbox_redirect_append_config_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Redirect/singbox_ap.json"
 
-singbox_route_url="https://raw.githubusercontent.com/bakasine/rules/master/singbox/singbox.txt"
+singbox_route_url="${GH_PROXY}https://raw.githubusercontent.com/bakasine/rules/master/singbox/singbox.txt"
 # SINGBOX URL END
 
 # MIHOMO URL START
 mihomo_cfg="/etc/mihomo"
-mihomo_install_url="https://github.com/uerax/taffy-onekey/raw/master/install-mihomo.sh"
+mihomo_install_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/install-mihomo.sh"
 
-mihomo_ss_config_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Shadowsocket/mihomo.yaml"
+mihomo_ss_config_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Shadowsocket/mihomo.yaml"
 
-mihomo_vless_reality_grpc_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/REALITY-GRPC/mihomo.yaml"
-mihomo_vless_reality_tcp_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/REALITY-TCP/mihomo.yaml"
+mihomo_vless_reality_grpc_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/REALITY-GRPC/mihomo.yaml"
+mihomo_vless_reality_tcp_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/REALITY-TCP/mihomo.yaml"
 
-mihomo_redirect_config_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Redirect/mihomo.yaml"
+mihomo_redirect_config_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Redirect/mihomo.yaml"
 
-mihomo_hysteria2_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Hysteria2/mihomo.yaml"
-mihomo_anytls_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/AnyTLS/mihomo.yaml"
+mihomo_hysteria2_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Hysteria2/mihomo.yaml"
+mihomo_anytls_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/AnyTLS/mihomo.yaml"
 
 
 # MIHOMO URL END
@@ -313,7 +328,7 @@ run_config_script() {
             sh "${_local}" "${_mode}"
         fi
     else
-        run_remote_script "https://raw.githubusercontent.com/uerax/taffy-onekey/master/configuration.sh" "${_mode}"
+        run_remote_script "${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/configuration.sh" "${_mode}"
     fi
 }
 
@@ -2336,7 +2351,7 @@ update_script() {
     info "正在从 GitHub 获取最新版本..."
     
     # 2. 下载到临时文件，防止直接覆盖导致脚本损坏
-    update_url="https://raw.githubusercontent.com/uerax/taffy-onekey/master/taffy.sh"
+    update_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/taffy.sh"
     temp_file="taffy.sh.tmp"
     
     if wget --no-check-certificate -q -O "$temp_file" "$update_url"; then

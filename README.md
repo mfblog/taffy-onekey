@@ -15,7 +15,7 @@ bash -c "$(curl -sL https://raw.githubusercontent.com/uerax/taffy-onekey/master/
 __国内机器__
 
 ```
-wget -N --no-check-certificate -q -O taffy-cn.sh "https://gh-proxy.com/https://raw.githubusercontent.com/uerax/taffy-onekey/master/taffy-cn.sh" && chmod +x taffy-cn.sh && bash taffy-cn.sh
+bash -c "$(curl -sL https://gh-proxy.com/https://raw.githubusercontent.com/uerax/taffy-onekey/master/taffy.sh)" @ -cn
 ```
 
 `一键安装 Singbox`

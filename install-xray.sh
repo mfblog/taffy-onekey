@@ -19,6 +19,7 @@ DAT_PATH=${DAT_PATH:-/usr/local/share/xray}
 # You can set this variable whatever you want in shell session right before running this script by issuing:
 # export JSON_PATH='/usr/local/etc/xray'
 JSON_PATH=${JSON_PATH:-/usr/local/etc/xray}
+GH_PROXY=${GH_PROXY:-}
 
 # Set this variable only if you are starting xray with multiple configuration files:
 # export JSONS_PATH='/usr/local/etc/xray'
@@ -372,7 +373,7 @@ get_latest_version() {
   # Get Xray latest release version number
   local tmp_file
   tmp_file="$(mktemp)"
-  if ! curl -x "${PROXY}" -sS -H "Accept: application/vnd.github.v3+json" -o "$tmp_file" 'https://api.github.com/repos/XTLS/Xray-core/releases/latest'; then
+  if ! curl -x "${PROXY}" -sS -H "Accept: application/vnd.github.v3+json" -o "$tmp_file" "${GH_PROXY}https://api.github.com/repos/XTLS/Xray-core/releases/latest"; then
     "rm" "$tmp_file"
     echo 'error: Failed to get release list, please check your network.'
     exit 1
@@ -390,7 +391,7 @@ get_latest_version() {
   fi
   "rm" "$tmp_file"
   RELEASE_LATEST="v${RELEASE_LATEST#v}"
-  if ! curl -x "${PROXY}" -sS -H "Accept: application/vnd.github.v3+json" -o "$tmp_file" 'https://api.github.com/repos/XTLS/Xray-core/releases'; then
+  if ! curl -x "${PROXY}" -sS -H "Accept: application/vnd.github.v3+json" -o "$tmp_file" "${GH_PROXY}https://api.github.com/repos/XTLS/Xray-core/releases"; then
     "rm" "$tmp_file"
     echo 'error: Failed to get release list, please check your network.'
     exit 1
@@ -422,7 +423,7 @@ version_gt() {
 }
 
 download_xray() {
-  DOWNLOAD_LINK="https://github.com/XTLS/Xray-core/releases/download/${INSTALL_VERSION}/Xray-linux-${MACHINE}.zip"
+  DOWNLOAD_LINK="${GH_PROXY}https://github.com/XTLS/Xray-core/releases/download/${INSTALL_VERSION}/Xray-linux-${MACHINE}.zip"
   echo "Downloading Xray archive: $DOWNLOAD_LINK"
   if curl -f -x "${PROXY}" -R -H 'Cache-Control: no-cache' -o "$ZIP_FILE" "$DOWNLOAD_LINK"; then
     echo "ok."
@@ -684,8 +685,8 @@ install_geodata() {
       exit 1
     fi
   }
-  local download_link_geoip="https://github.com/v2fly/geoip/releases/latest/download/geoip.dat"
-  local download_link_geosite="https://github.com/v2fly/domain-list-community/releases/latest/download/dlc.dat"
+  local download_link_geoip="${GH_PROXY}https://github.com/v2fly/geoip/releases/latest/download/geoip.dat"
+  local download_link_geosite="${GH_PROXY}https://github.com/v2fly/domain-list-community/releases/latest/download/dlc.dat"
   local file_ip='geoip.dat'
   local file_dlc='dlc.dat'
   local file_site='geosite.dat'

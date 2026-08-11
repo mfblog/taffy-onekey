@@ -5,39 +5,44 @@ set -e
 detect_os() {
     . '/etc/os-release'
     case "${ID}" in
-        "debian"|"ubuntu")            
+        "debian"|"ubuntu")
             OS="debian"
             ;;
-            
         "alpine")
             OS="alpine"
             ;;
-
         *)
             exit 1
             ;;
     esac
 }
 
-install_mihomo() {
+detect_arch() {
     ARCH_RAW=$(uname -m)
     case "${ARCH_RAW}" in
-        'x86_64')    ARCH='amd64';;
+        'x86_64')                ARCH='amd64';;
         'x86' | 'i686' | 'i386') ARCH='386';;
-        'aarch64' | 'arm64') ARCH='arm64';;
-        'armv7l')   ARCH='armv7';;
-        's390x')    ARCH='s390x';;
+        'aarch64' | 'arm64')     ARCH='arm64';;
+        'armv7l')                ARCH='armv7';;
+        's390x')                 ARCH='s390x';;
         *) echo "Unsupported architecture: ${ARCH_RAW}"; exit 1;;
     esac
+}
 
-    if [ -n "$SPECIFIED_VERSION" ]; then 
-        VERSION="$SPECIFIED_VERSION" 
-    else 
+get_latest_version() {
+    if [ -n "$SPECIFIED_VERSION" ]; then
+        VERSION="$SPECIFIED_VERSION"
+    else
         VERSION=$(curl -s https://api.github.com/repos/MetaCubeX/mihomo/releases/latest \
             | grep tag_name \
             | cut -d ":" -f2 \
-            | sed 's/\"//g;s/\,//g;s/\ //g;s/v//')     
+            | sed 's/\"//g;s/\,//g;s/\ //g;s/v//')
     fi
+}
+
+install_mihomo() {
+    detect_arch
+    get_latest_version
 
     if [ "$OS" = "debian" ]; then
         curl -Lo mihomo.deb "https://github.com/MetaCubeX/mihomo/releases/download/v${VERSION}/mihomo-linux-${ARCH}-v${VERSION}.deb"
@@ -95,24 +100,8 @@ EOF
 }
 
 update_mihomo() {
-    ARCH_RAW=$(uname -m)
-    case "${ARCH_RAW}" in
-        'x86_64')    ARCH='amd64';;
-        'x86' | 'i686' | 'i386') ARCH='386';;
-        'aarch64' | 'arm64') ARCH='arm64';;
-        'armv7l')   ARCH='armv7';;
-        's390x')    ARCH='s390x';;
-        *) echo "Unsupported architecture: ${ARCH_RAW}"; exit 1;;
-    esac
-
-    if [ -n "$SPECIFIED_VERSION" ]; then 
-        VERSION="$SPECIFIED_VERSION" 
-    else 
-        VERSION=$(curl -s https://api.github.com/repos/MetaCubeX/mihomo/releases/latest \
-            | grep tag_name \
-            | cut -d ":" -f2 \
-            | sed 's/\"//g;s/\,//g;s/\ //g;s/v//')     
-    fi
+    detect_arch
+    get_latest_version
 
     echo "Updating mihomo to version ${VERSION}..."
 

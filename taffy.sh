@@ -388,8 +388,8 @@ env_install_singbox() {
     judge "wget lsof curl jq openssl 安装"
 }
 env_install_mihomo() {
-    ${PKG_MANAGER} wget lsof curl openssl
-    judge "wget lsof curl openssl 安装"
+    ${PKG_MANAGER} wget lsof curl jq openssl
+    judge "wget lsof curl jq openssl 安装"
 }
 
 yq_install() {
@@ -1141,165 +1141,180 @@ xray_redirect_append() {
 
 # outbound start
 singbox_hy2_outbound_config() {
-    singbox_outbound="{
-    \"type\": \"hysteria2\",
-    \"server\": \"${ip}\",
-    \"server_port\": ${port},
-    \"network\": \"tcp\",
-    \"tls\": {
-      \"enabled\": true,
-      \"disable_sni\": false,
-      \"server_name\": \"www.python.org\",
-      \"insecure\": true,
-      \"utls\": {
-        \"enabled\": false,
-        \"fingerprint\": \"chrome\"
-      }
-    },
-    \"password\": \"${password}\"\n}"
+    singbox_outbound=$(jq -n \
+        --arg ip "$ip" \
+        --argjson port "${port:-0}" \
+        --arg password "$password" \
+        '{
+            type: "hysteria2",
+            server: $ip,
+            server_port: $port,
+            network: "tcp",
+            tls: {
+                enabled: true,
+                disable_sni: false,
+                server_name: "www.python.org",
+                insecure: true,
+                utls: { enabled: false, fingerprint: "chrome" }
+            },
+            password: $password
+        }')
 }
 
 anytls_outbound_config() {
-    # 服务端地址优先用 domain（安装时多为公网 IP），否则用 ip
     _any_host="${domain}"
     [ -z "${_any_host}" ] && _any_host="${ip}"
-    singbox_outbound="{
-    \"type\": \"anytls\",
-    \"server\": \"${_any_host}\",
-    \"server_port\": ${port},
-    \"password\": \"${password}\",
-    \"tls\": {
-      \"enabled\": true,
-      \"server_name\": \"${anytls_sni}\",
-      \"insecure\": true,
-      \"utls\": {
-        \"enabled\": true,
-        \"fingerprint\": \"chrome\"
-      }
-    }
-}"
+    singbox_outbound=$(jq -n \
+        --arg host "$_any_host" \
+        --argjson port "${port:-0}" \
+        --arg password "$password" \
+        --arg sni "$anytls_sni" \
+        '{
+            type: "anytls",
+            server: $host,
+            server_port: $port,
+            password: $password,
+            tls: {
+                enabled: true,
+                server_name: $sni,
+                insecure: true,
+                utls: { enabled: true, fingerprint: "chrome" }
+            }
+        }')
     xray_outbound=""
 }
 
 vless_reality_grpc_outbound_config() {
-    xray_outbound="{
-    \"protocol\": \"vless\",
-    \"settings\": {
-        \"vnext\": [
-            {
-                \"address\": \"${ip}\",
-                \"port\": ${port},
-                \"users\": [
-                    {
-                        \"id\": \"${password}\",
-                        \"encryption\": \"none\"
-                    }
-                ]
+    xray_outbound=$(jq -n \
+        --arg ip "$ip" \
+        --argjson port "${port:-0}" \
+        --arg password "$password" \
+        --arg domain "$domain" \
+        --arg pubkey "$public_key" \
+        --arg shortId "$short_id" \
+        --arg wsPath "$ws_path" \
+        '{
+            protocol: "vless",
+            settings: {
+                vnext: [{
+                    address: $ip,
+                    port: $port,
+                    users: [{ id: $password, encryption: "none" }]
+                }]
+            },
+            streamSettings: {
+                network: "grpc",
+                security: "reality",
+                realitySettings: {
+                    fingerprint: "safari",
+                    serverName: $domain,
+                    publicKey: $pubkey,
+                    shortId: $shortId
+                },
+                grpcSettings: {
+                    serviceName: $wsPath,
+                    multiMode: true,
+                    idle_timeout: 60,
+                    health_check_timeout: 20
+                }
             }
-        ]
-    },
-    \"streamSettings\": {
-        \"network\": \"grpc\",
-        \"security\": \"reality\",
-        \"realitySettings\": {
-            \"fingerprint\": \"safari\",
-            \"serverName\": \"${domain}\",
-            \"publicKey\": \"${public_key}\",
-            \"shortId\": \"${short_id}\"
-        },
-        \"grpcSettings\": {
-            \"serviceName\": \"${ws_path}\",
-            \"multiMode\": true,
-            \"idle_timeout\": 60,
-            \"health_check_timeout\": 20
-        }
-    }\n}"
+        }')
 }
 
 vless_reality_tcp_outbound_config() {
-    xray_outbound="{
-    \"protocol\": \"vless\",
-    \"settings\": {
-        \"vnext\": [
-            {
-                \"address\": \"${ip}\",
-                \"port\": ${port},
-                \"users\": [
-                    {
-                        \"id\": \"${password}\",
-                        \"encryption\": \"none\",
-                        \"flow\": \"xtls-rprx-vision\"
-                    }
-                ]
-            }\
-        ]
-    },
-    \"streamSettings\": {
-        \"network\": \"tcp\",
-        \"security\": \"reality\",
-        \"realitySettings\": {
-            \"show\": false,
-            \"fingerprint\": \"safari\",
-            \"serverName\": \"${domain}\",
-            \"publicKey\": \"${public_key}\",
-            \"shortId\": \"${short_id}\",
-            \"spiderX\": \"/\"
-        }
-    }\n}"
+    xray_outbound=$(jq -n \
+        --arg ip "$ip" \
+        --argjson port "${port:-0}" \
+        --arg password "$password" \
+        --arg domain "$domain" \
+        --arg pubkey "$public_key" \
+        --arg shortId "$short_id" \
+        '{
+            protocol: "vless",
+            settings: {
+                vnext: [{
+                    address: $ip,
+                    port: $port,
+                    users: [{ id: $password, encryption: "none", flow: "xtls-rprx-vision" }]
+                }]
+            },
+            streamSettings: {
+                network: "tcp",
+                security: "reality",
+                realitySettings: {
+                    show: false,
+                    fingerprint: "safari",
+                    serverName: $domain,
+                    publicKey: $pubkey,
+                    shortId: $shortId,
+                    spiderX: "/"
+                }
+            }
+        }')
 }
 
 vless_reality_h2_outbound_config() {
-    xray_outbound="{
-    \"protocol\": \"vless\",
-    \"settings\": {
-        \"vnext\": [
-            {
-                \"address\": \"${ip}\",
-                \"port\": ${port},
-                \"users\": [
-                    {
-                        \"id\": \"${password}\",
-                        \"encryption\": \"none\"
-                    }
-                ]
+    xray_outbound=$(jq -n \
+        --arg ip "$ip" \
+        --argjson port "${port:-0}" \
+        --arg password "$password" \
+        --arg domain "$domain" \
+        --arg pubkey "$public_key" \
+        --arg shortId "$short_id" \
+        '{
+            protocol: "vless",
+            settings: {
+                vnext: [{
+                    address: $ip,
+                    port: $port,
+                    users: [{ id: $password, encryption: "none" }]
+                }]
+            },
+            streamSettings: {
+                network: "h2",
+                security: "reality",
+                realitySettings: {
+                    show: false,
+                    fingerprint: "safari",
+                    serverName: $domain,
+                    publicKey: $pubkey,
+                    shortId: $shortId,
+                    spiderX: "/"
+                }
             }
-        ]
-    },
-    \"streamSettings\": {
-        \"network\": \"h2\",
-        \"security\": \"reality\",
-        \"realitySettings\": {
-            \"show\": false,
-            \"fingerprint\": \"safari\",
-            \"serverName\": \"${domain}\",
-            \"publicKey\": \"${public_key}\",
-            \"shortId\": \"${short_id}\",
-            \"spiderX\": \"/\"
-        }
-    }\n}"
+        }')
 }
 
 shadowsocket_outbound_config() {
-    xray_outbound="{
-    \"protocol\": \"shadowsocks\",
-    \"settings\": {
-        \"servers\": [
-            {
-                \"address\": \"${domain}\",
-                \"port\": ${port},
-                \"method\": \"${ss_method}\",
-                \"password\": \"${password}\"
+    xray_outbound=$(jq -n \
+        --arg domain "$domain" \
+        --argjson port "${port:-0}" \
+        --arg method "$ss_method" \
+        --arg password "$password" \
+        '{
+            protocol: "shadowsocks",
+            settings: {
+                servers: [{
+                    address: $domain,
+                    port: $port,
+                    method: $method,
+                    password: $password
+                }]
             }
-        ]
-    }
-}"
-    singbox_outbound="{
-    \"type\": \"shadowsocks\",
-    \"server\": \"${domain}\",
-    \"server_port\": ${port},
-    \"method\": \"${ss_method}\",
-    \"password\": \"${password}\"
-}"
+        }')
+
+    singbox_outbound=$(jq -n \
+        --arg domain "$domain" \
+        --argjson port "${port:-0}" \
+        --arg method "$ss_method" \
+        --arg password "$password" \
+        '{
+            type: "shadowsocks",
+            server: $domain,
+            server_port: $port,
+            method: $method,
+            password: $password
+        }')
 }
 
 socks5_append() {
@@ -1459,7 +1474,7 @@ _ensure_self_signed_tls() {
         fi
         openssl ecparam -name prime256v1 -genkey -noout -out "${cert_dir}/server.key"
         openssl req -x509 -nodes -key "${cert_dir}/server.key" -out "${cert_dir}/server.crt" \
-            -subj "/CN=${cert_cn}" -days 36500
+            -subj "/CN=${cert_cn}" -days 825
         chmod 644 "${cert_dir}/server.crt"
         chmod 600 "${cert_dir}/server.key"
     fi
@@ -1889,7 +1904,7 @@ mihomo_update() {
         curl -fsSL "$mihomo_install_url" | bash -s -- update
         judge "Mihomo 更新"
     else
-        ok "Mihomo 已更新"
+        warn "Mihomo 未安装"
     fi
 }
 

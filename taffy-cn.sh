@@ -98,11 +98,11 @@ mihomo_remove() {
 }
 
 mihomo_update() {
-    if ! command -v mihomo >/dev/null 2>&1; then
-        ok "Mihomo 已更新"
-    else
+    if command -v mihomo >/dev/null 2>&1; then
         curl -fsSL "$mihomo_install_url" | bash -s -- update
         judge "Mihomo 更新"
+    else
+        warn "Mihomo 未安装"
     fi
 }
 
@@ -154,6 +154,7 @@ mihomo_shadowsocket() {
     case $encrypt in
     1)
       password=$(openssl rand -base64 16)
+      ss_method="2022-blake3-aes-128-gcm"
       ;;
     2)
       password=$(openssl rand -base64 32)
@@ -171,7 +172,7 @@ mihomo_shadowsocket() {
       password=$(openssl rand -base64 16)
       ss_method="chacha20-ietf-poly1305"
       ;;
-    5)
+    6)
       password=$(openssl rand -base64 16)
       ss_method="xchacha20-ietf-poly1305"
       ;;
@@ -180,8 +181,8 @@ mihomo_shadowsocket() {
       ;;
     esac
 
-    domain=`curl -sS ipinfo.io/ip`
-    ipv6=`curl -sS6 --connect-timeout 4 ip.me`
+    domain=$(curl -sS ipinfo.io/ip)
+    ipv6=$(curl -sS6 --connect-timeout 4 ip.me)
 
     mihomo_shadowsocket_config
     systemctl restart mihomo
@@ -210,7 +211,7 @@ mihomo_shadowsocket_config() {
 }
 
 mihomo_redirect() {
-    ip=`curl -sS ipinfo.io/ip`
+    ip=$(curl -sS ipinfo.io/ip)
     set_port
     read -rp "输入转发的目标地址: " re_ip
     read -rp "输入转发的目标端口: " re_port
@@ -499,7 +500,7 @@ qx_config() {
 
 trojan() {
     protocol_type="trojan"
-    ip=`curl -sS ip.me`
+    ip=$(curl -sS ip.me)
     if ! command -v openssl >/dev/null 2>&1; then
           ${INS} openssl
           judge "openssl 安装"
@@ -515,7 +516,7 @@ trojan() {
 
 trojan_append() {
     protocol_type="trojan"
-    ip=`curl -sS ip.me`
+    ip=$(curl -sS ip.me)
     if ! command -v openssl >/dev/null 2>&1; then
           ${INS} openssl
           judge "openssl 安装"
@@ -531,7 +532,7 @@ trojan_append() {
     sed -i "s~\${password}~$password~" append.json
     sed -i "s~\${port}~$port~" append.json
 
-    echo -e "$(xray run -confdir=./ -dump)"  > config.json
+    xray run -confdir=./ -dump > config.json
     rm append.json
 
     link="trojan://${password}@${ip}:${port}#${domain}"
@@ -574,6 +575,7 @@ shadowsocket() {
     case $encrypt in
     1)
       password=$(openssl rand -base64 16)
+      ss_method="2022-blake3-aes-128-gcm"
       ;;
     2)
       password=$(openssl rand -base64 32)
@@ -591,7 +593,7 @@ shadowsocket() {
       password=$(openssl rand -base64 16)
       ss_method="chacha20-ietf-poly1305"
       ;;
-    5)
+    6)
       password=$(openssl rand -base64 16)
       ss_method="xchacha20-ietf-poly1305"
       ;;
@@ -604,7 +606,7 @@ shadowsocket() {
 
     tmp="${ss_method}:${password}"
     tmp=$( openssl base64 <<< $tmp)
-    domain=`curl -sS ip.me`
+    domain=$(curl -sS ip.me)
     link="ss://$tmp@${domain}:${port}"
 
     protocol_type="shadowsocket"
@@ -635,6 +637,7 @@ shadowsocket_append() {
     case $encrypt in
     1)
       password=$(openssl rand -base64 16)
+      ss_method="2022-blake3-aes-128-gcm"
       ;;
     2)
       password=$(openssl rand -base64 32)
@@ -652,7 +655,7 @@ shadowsocket_append() {
       password=$(openssl rand -base64 16)
       ss_method="chacha20-ietf-poly1305"
       ;;
-    5)
+    6)
       password=$(openssl rand -base64 16)
       ss_method="xchacha20-ietf-poly1305"
       ;;
@@ -670,13 +673,13 @@ shadowsocket_append() {
     sed -i "s~\${method}~$ss_method~" append.json
     sed -i "s~\${port}~$port~" append.json
 
-    echo -e "$(xray run -confdir=./ -dump)"  > config.json
+    xray run -confdir=./ -dump > config.json
     rm append.json
 
     tmp="${ss_method}:${password}"
     tmp=$( openssl base64 <<< $tmp)
-    domain=`curl -sS ip.me`
-    ipv6=`curl -sS6 --connect-timeout 4 ip.me`
+    domain=$(curl -sS ip.me)
+    ipv6=$(curl -sS6 --connect-timeout 4 ip.me)
     link="ss://$tmp@${domain}:${port}"
 
     shadowsocket_outbound_config
@@ -697,7 +700,7 @@ shadowsocket_config() {
 
 redirect() {
     protocol_type="redirect"
-    ip=`curl -sS ip.me`
+    ip=$(curl -sS ip.me)
     set_port
     read -rp "输入转发的目标地址: " re_ip
     read -rp "输入转发的目标端口: " re_port
@@ -717,7 +720,7 @@ redirect() {
 }
 
 redirect_append() {
-    ip=`curl -sS ip.me`
+    ip=$(curl -sS ip.me)
     set_port
     read -rp "输入转发的目标地址: " re_ip
     read -rp "输入转发的目标端口: " re_port
@@ -892,7 +895,7 @@ show_info() {
 }
 
 update_script() {
-    script_path=$(cd `dirname $0`; pwd)
+    script_path=$(cd "$(dirname "$0")"; pwd)
     wget --no-check-certificate -q -O $( readlink -f -- "$0"; ) "https://gh-proxy.com/https://raw.githubusercontent.com/uerax/taffy-onekey/master/taffy-cn.sh"
     exit
 }

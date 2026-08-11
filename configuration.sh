@@ -371,129 +371,134 @@ mihomo_vless() {
 }
 
 vless_reality_h2_outbound_config() {
-    local xray_outbound="{
-    \"protocol\": \"vless\",
-    \"settings\": {
-        \"vnext\": [
-            {
-                \"address\": \"${ip}\",
-                \"port\": ${port},
-                \"users\": [
-                    {
-                        \"id\": \"${password}\",
-                        \"encryption\": \"none\"
-                    }
-                ]
+    local xray_outbound
+    xray_outbound=$(jq -n \
+        --arg ip "$ip" \
+        --argjson port "${port:-0}" \
+        --arg password "$password" \
+        --arg domain "$domain" \
+        --arg pubkey "$pubkey" \
+        --arg shortId "$shortId" \
+        '{
+            protocol: "vless",
+            settings: {
+                vnext: [{
+                    address: $ip,
+                    port: $port,
+                    users: [{ id: $password, encryption: "none" }]
+                }]
+            },
+            streamSettings: {
+                network: "h2",
+                security: "reality",
+                realitySettings: {
+                    show: false,
+                    fingerprint: "safari",
+                    serverName: $domain,
+                    publicKey: $pubkey,
+                    shortId: $shortId,
+                    spiderX: "/"
+                }
             }
-        ]
-    },
-    \"streamSettings\": {
-        \"network\": \"h2\",
-        \"security\": \"reality\",
-        \"realitySettings\": {
-            \"show\": false,
-            \"fingerprint\": \"safari\",
-            \"serverName\": \"${domain}\",
-            \"publicKey\": \"${pubkey}\",
-            \"shortId\": \"${shortId}\",
-            \"spiderX\": \"/\"
-        }
-    }\n}"
+        }')
 
     show_info
 }
 
 vless_reality_tcp_outbound_config() {
-    local xray_outbound="{
-    \"protocol\": \"vless\",
-    \"settings\": {
-        \"vnext\": [
-            {
-                \"address\": \"${ip}\",
-                \"port\": ${port},
-                \"users\": [
-                    {
-                        \"id\": \"${password}\",
-                        \"encryption\": \"none\",
-                        \"flow\": \"xtls-rprx-vision\"
-                    }
-                ]
-            }\
-        ]
-    },
-    \"streamSettings\": {
-        \"network\": \"tcp\",
-        \"security\": \"reality\",
-        \"realitySettings\": {
-            \"show\": false,
-            \"fingerprint\": \"safari\",
-            \"serverName\": \"${domain}\",
-            \"publicKey\": \"${pubkey}\",
-            \"shortId\": \"${shortId}\",
-            \"spiderX\": \"/\"
-        }
-    }\n}"
+    local xray_outbound
+    xray_outbound=$(jq -n \
+        --arg ip "$ip" \
+        --argjson port "${port:-0}" \
+        --arg password "$password" \
+        --arg domain "$domain" \
+        --arg pubkey "$pubkey" \
+        --arg shortId "$shortId" \
+        '{
+            protocol: "vless",
+            settings: {
+                vnext: [{
+                    address: $ip,
+                    port: $port,
+                    users: [{ id: $password, encryption: "none", flow: "xtls-rprx-vision" }]
+                }]
+            },
+            streamSettings: {
+                network: "tcp",
+                security: "reality",
+                realitySettings: {
+                    show: false,
+                    fingerprint: "safari",
+                    serverName: $domain,
+                    publicKey: $pubkey,
+                    shortId: $shortId,
+                    spiderX: "/"
+                }
+            }
+        }')
 
     show_info
 }
 
 vless_reality_grpc_outbound_config() {
-    local xray_outbound="{
-    \"protocol\": \"vless\",
-    \"settings\": {
-        \"vnext\": [
-            {
-                \"address\": \"${ip}\",
-                \"port\": ${port},
-                \"users\": [
-                    {
-                        \"id\": \"${password}\",
-                        \"encryption\": \"none\"
-                    }
-                ]
+    local xray_outbound singbox_outbound
+    xray_outbound=$(jq -n \
+        --arg ip "$ip" \
+        --argjson port "${port:-0}" \
+        --arg password "$password" \
+        --arg domain "$domain" \
+        --arg pubkey "$pubkey" \
+        --arg shortId "$shortId" \
+        --arg servName "$servName" \
+        '{
+            protocol: "vless",
+            settings: {
+                vnext: [{
+                    address: $ip,
+                    port: $port,
+                    users: [{ id: $password, encryption: "none" }]
+                }]
+            },
+            streamSettings: {
+                network: "grpc",
+                security: "reality",
+                realitySettings: {
+                    fingerprint: "safari",
+                    serverName: $domain,
+                    publicKey: $pubkey,
+                    shortId: $shortId
+                },
+                grpcSettings: {
+                    serviceName: $servName,
+                    multiMode: true,
+                    idle_timeout: 60,
+                    health_check_timeout: 20
+                }
             }
-        ]
-    },
-    \"streamSettings\": {
-        \"network\": \"grpc\",
-        \"security\": \"reality\",
-        \"realitySettings\": {
-            \"fingerprint\": \"safari\",
-            \"serverName\": \"${domain}\",
-            \"publicKey\": \"${pubkey}\",
-            \"shortId\": \"${shortId}\"
-        },
-        \"grpcSettings\": {
-            \"serviceName\": \"${servName}\",
-            \"multiMode\": true,
-            \"idle_timeout\": 60,
-            \"health_check_timeout\": 20
-        }
-    }\n}"
+        }')
 
-    local singbox_outbound="{
-      \"type\": \"vless\",
-      \"server\": \"${ip}\",
-      \"server_port\": ${port},
-      \"uuid\": \"${password}\",
-      \"packet_encoding\": \"xudp\",
-      \"tls\": {
-        \"enabled\": true,
-        \"server_name\": \"${domain}\",
-        \"utls\": {
-          \"enabled\": true,
-          \"fingerprint\": \"chrome\"
-        },
-        \"reality\": {
-          \"enabled\": true,
-          \"public_key\": \"${pubkey}\",
-          \"short_id\": \"${shortId}\"
-        }
-      },
-      \"transport\": {
-        \"type\": \"grpc\",
-        \"service_name\": \"${servName}\"
-      }\n}"
+    singbox_outbound=$(jq -n \
+        --arg ip "$ip" \
+        --argjson port "${port:-0}" \
+        --arg password "$password" \
+        --arg domain "$domain" \
+        --arg pubkey "$pubkey" \
+        --arg shortId "$shortId" \
+        --arg servName "$servName" \
+        '{
+            type: "vless",
+            server: $ip,
+            server_port: $port,
+            uuid: $password,
+            packet_encoding: "xudp",
+            tls: {
+                enabled: true,
+                server_name: $domain,
+                utls: { enabled: true, fingerprint: "chrome" },
+                reality: { enabled: true, public_key: $pubkey, short_id: $shortId }
+            },
+            transport: { type: "grpc", service_name: $servName }
+        }')
 
     show_info
 }
@@ -532,22 +537,26 @@ mihomo_hy2() {
 }
 
 singbox_hy2_outbound_config() {
-    local singbox_outbound="  {
-    \"type\": \"hysteria2\",
-    \"server\": \"${ip}\",
-    \"server_port\": ${port},
-    \"network\": \"tcp\",
-    \"tls\": {
-      \"enabled\": true,
-      \"disable_sni\": false,
-      \"server_name\": \"${reality_sni}\",
-      \"insecure\": true,
-      \"utls\": {
-        \"enabled\": false,
-        \"fingerprint\": \"chrome\"
-      }
-    },
-    \"password\": \"${password}\"\n  }"
+    local singbox_outbound
+    singbox_outbound=$(jq -n \
+        --arg ip "$ip" \
+        --argjson port "${port:-0}" \
+        --arg password "$password" \
+        --arg sni "$reality_sni" \
+        '{
+            type: "hysteria2",
+            server: $ip,
+            server_port: $port,
+            network: "tcp",
+            tls: {
+                enabled: true,
+                disable_sni: false,
+                server_name: $sni,
+                insecure: true,
+                utls: { enabled: false, fingerprint: "chrome" }
+            },
+            password: $password
+        }')
 
     show_info
 }
@@ -582,21 +591,25 @@ mihomo_anytls() {
 }
 
 anytls_outbound_config() {
-    local singbox_outbound="{
-    \"type\": \"anytls\",
-    \"server\": \"${ip}\",
-    \"server_port\": ${port},
-    \"password\": \"${password}\",
-    \"tls\": {
-      \"enabled\": true,
-      \"server_name\": \"${anytls_sni}\",
-      \"insecure\": true,
-      \"utls\": {
-        \"enabled\": true,
-        \"fingerprint\": \"chrome\"
-      }
-    }
-}"
+    local singbox_outbound
+    singbox_outbound=$(jq -n \
+        --arg ip "$ip" \
+        --argjson port "${port:-0}" \
+        --arg password "$password" \
+        --arg sni "$anytls_sni" \
+        '{
+            type: "anytls",
+            server: $ip,
+            server_port: $port,
+            password: $password,
+            tls: {
+                enabled: true,
+                server_name: $sni,
+                insecure: true,
+                utls: { enabled: true, fingerprint: "chrome" }
+            }
+        }')
+    local xray_outbound=""
 
     show_info
 }

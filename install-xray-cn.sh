@@ -1,5 +1,7 @@
-amd="https://gh-proxy.com/https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip"
-arm="https://gh-proxy.com/https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-arm64-v8a.zip"
+GH_PROXY="https://gh-proxy.com/"
+
+amd="${GH_PROXY}https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip"
+arm="${GH_PROXY}https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-arm64-v8a.zip"
 link=""
 
 case "$(uname -m)" in
@@ -11,15 +13,22 @@ case "$(uname -m)" in
       ;;
 esac
 
-mkdir -p /root/xray
-cd /root/xray
+command -v unzip >/dev/null 2>&1 || { apt install -y unzip || apk add --no-cache unzip; }
+
+tmpdir=$(mktemp -d)
+cd "$tmpdir"
 
 wget ${link} -O Xray-linux.zip
 
 unzip Xray-linux.zip
 
 mv xray /usr/local/bin/
-rm -r /root/xray
+mkdir -p /usr/local/share/xray
+[ -f geoip.dat ] && mv geoip.dat /usr/local/share/xray/
+[ -f geosite.dat ] && mv geosite.dat /usr/local/share/xray/
+
+cd /
+rm -rf "$tmpdir"
 mkdir -p /usr/local/etc/xray
 
 cat > /etc/systemd/system/xray.service << EOF
@@ -40,3 +49,4 @@ WantedBy=multi-user.target
 EOF
 
 systemctl daemon-reload
+systemctl enable xray

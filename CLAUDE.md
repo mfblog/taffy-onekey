@@ -55,8 +55,8 @@ bash -c "$(curl -sL https://raw.githubusercontent.com/uerax/taffy-onekey/master/
 ### Layers
 
 ```
-taffy.sh (v5.1.0, #!/bin/sh)     # full product: menu + protocol orchestration
-taffy-cn.sh (v3.0.3, bash)       # thinner China fork (duplicated logic, not a wrapper)
+taffy.sh (v5.2.0, #!/bin/sh)     # full product: menu + protocol orchestration
+taffy-cn.sh (shim, bash)          # forwarder to taffy.sh with -cn flag
   → install-xray.sh / -cn        # binary + unit only (xray from XTLS install lineage)
   → install-singbox.sh           # sing-box: .deb (Debian/Ubuntu) or binary+OpenRC (Alpine)
   → install-mihomo.sh / -cn      # mihomo package + systemd/OpenRC + base YAML

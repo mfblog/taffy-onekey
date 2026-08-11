@@ -4,7 +4,7 @@ export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 stty erase ^?
 
-version="v5.1.0"
+version="v5.2.0"
 
 GH_PROXY="${GH_PROXY:-}"
 

@@ -17,7 +17,7 @@ __保存脚本本地执行__
 
 ```bash
 # 下载脚本
-wget -N --no-check-certificate -q -O taffy.sh "https://raw.githubusercontent.com/uerax/taffy-onekey/master/taffy.sh" && chmod +x taffy.sh
+wget --no-check-certificate -q -O taffy.sh "https://raw.githubusercontent.com/uerax/taffy-onekey/master/taffy.sh" && chmod +x taffy.sh
 
 # 交互式菜单运行
 sudo bash taffy.sh

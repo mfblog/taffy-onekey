@@ -751,7 +751,7 @@ xray_vless_reality_h2() {
     gen_short_id
     get_public_ip
 
-    wget -N ${xray_vless_reality_h2_url} -O ${xray_cfg}
+    wget -q ${xray_vless_reality_h2_url} -O ${xray_cfg}
     judge "Xray Reality H2配置文件下载"
 
     sed -i "s~\${password}~$password~" ${xray_cfg}
@@ -760,7 +760,7 @@ xray_vless_reality_h2() {
     sed -i "s~\${shortId}~$short_id~" ${xray_cfg}
     sed -i "s~\${port}~$port~" ${xray_cfg}
     sed -i "s~\${reality_sni}~$reality_sni~" ${xray_cfg}
-    
+
     routing_set
     vless_reality_h2_outbound_config
     restart_service xray
@@ -785,7 +785,7 @@ xray_vless_reality_h2_append() {
 
     cd /usr/local/etc/xray
 
-    wget -Nq ${vless_reality_h2_append_url} -O append.json
+    wget -q ${vless_reality_h2_append_url} -O append.json
     judge "Xray Reality H2配置文件下载"
 
     sed -i "s~\${password}~$password~" append.json
@@ -818,7 +818,7 @@ xray_vless_reality_tcp() {
     gen_short_id
     get_public_ip
 
-    wget -N ${xray_vless_reality_tcp_url} -O ${xray_cfg}
+    wget -q ${xray_vless_reality_tcp_url} -O ${xray_cfg}
     judge "Xray Reality 配置文件下载"
 
     sed -i "s~\${password}~$password~" ${xray_cfg}
@@ -831,7 +831,7 @@ xray_vless_reality_tcp() {
     routing_set
     vless_reality_tcp_outbound_config
 
-    restart_service xray 
+    restart_service xray
 
     enable_service xray
 
@@ -855,7 +855,7 @@ xray_vless_reality_tcp_append() {
 
     cd /usr/local/etc/xray
 
-    wget -Nq ${xray_vless_reality_tcp_append_url} -O append.json
+    wget -q ${xray_vless_reality_tcp_append_url} -O append.json
     judge "Xray Reality 配置文件下载"
 
     sed -i "s~\${password}~$password~" append.json
@@ -888,7 +888,7 @@ xray_vless_reality_grpc() {
     gen_short_id
     get_public_ip
 
-    wget -N ${xray_vless_reality_grpc_url} -O ${xray_cfg}
+    wget -q ${xray_vless_reality_grpc_url} -O ${xray_cfg}
     judge "Xray Reality 配置文件下载"
 
     sed -i "s~\${password}~$password~" ${xray_cfg}
@@ -924,7 +924,7 @@ xray_vless_reality_grpc_append() {
 
     cd /usr/local/etc/xray
 
-    wget -Nq ${xray_vless_reality_grpc_append_url} -O append.json
+    wget -q ${xray_vless_reality_grpc_append_url} -O append.json
     judge "Xray Reality 配置文件下载"
 
     sed -i "s~\${password}~$password~" append.json
@@ -1013,7 +1013,7 @@ xray_shadowsocket() {
 }
 
 shadowsocket_config() {
-    wget -N ${xray_ss_config_url} -O config.json
+    wget -q ${xray_ss_config_url} -O config.json
     judge "配置文件下载"
     sed -i "s~\${method}~$ss_method~" config.json
     sed -i "s~\${password}~$password~" config.json
@@ -1032,12 +1032,12 @@ xray_redirect() {
     printf "输入转发的目标端口: "
     read -r re_port
 
-    wget -N ${xray_redirect_config_url} -O config.json
+    wget -q ${xray_redirect_config_url} -O config.json
     judge "配置文件下载"
     sed -i "s~114514~$port~" config.json
     sed -i "s~1919810~$re_port~" config.json
     sed -i "s~\${ip}~$re_ip~" config.json
-    
+
     mv config.json ${xray_cfg}
 
     service_apply xray
@@ -1100,7 +1100,7 @@ xray_shadowsocket_append() {
 
     cd /usr/local/etc/xray
 
-    wget -Nq ${xray_ss_append_config_url} -O append.json
+    wget -q ${xray_ss_append_config_url} -O append.json
     judge "配置文件下载"
 
     sed -i "s~\${password}~$password~" append.json
@@ -1136,7 +1136,7 @@ xray_redirect_append() {
 
     cd /usr/local/etc/xray
 
-    wget -Nq ${xray_redirect_append_config_url} -O append.json
+    wget -q ${xray_redirect_append_config_url} -O append.json
     judge "配置文件下载"
 
     sed -i "s~114514~$port~" append.json
@@ -1351,7 +1351,7 @@ socks5_append() {
 
     cd /usr/local/etc/xray
 
-    wget -Nq ${xray_socks5_append_config_url} -O append.json
+    wget -q ${xray_socks5_append_config_url} -O append.json
     judge "配置文件下载"
 
     sed -i "s~\${password}~$password~" append.json
@@ -1371,7 +1371,7 @@ routing_set() {
     read -r set_routing
     case $set_routing in
     [yY])
-      wget -Nq ${ukonw_url} -O uknow.tmp
+      wget -q ${ukonw_url} -O uknow.tmp
 
       sed -i '4 r uknow.tmp' ${xray_cfg}
 
@@ -1401,7 +1401,7 @@ set_port() {
             fi
             ;;
     esac
-} 
+}
 
 # XRAY END
 
@@ -1421,8 +1421,8 @@ singbox_onekey_install() {
     singbox_select
 }
 
-singbox_install() { 
-    curl -fsSL "$singbox_install_url" | bash 
+singbox_install() {
+    curl -fsSL "$singbox_install_url" | bash
 }
 
 uninstall_singbox() {
@@ -1436,7 +1436,7 @@ singbox_routing_set() {
     read -r set_routing
     case "$set_routing" in
     [yY])
-      wget -Nq ${singbox_route_url} -O uknow.tmp
+      wget -q ${singbox_route_url} -O uknow.tmp
 
       sed -i '2 r uknow.tmp' ${singbox_cfg}
 
@@ -1458,7 +1458,7 @@ singbox_hy2() {
     get_public_ip
     domain="${ip}"
 
-    wget -N ${singbox_hysteria2_url} -O config.json
+    wget -q ${singbox_hysteria2_url} -O config.json
     judge "配置文件下载"
 
     sed -i "s~\${password}~$password~" config.json
@@ -1504,7 +1504,7 @@ singbox_anytls() {
     get_public_ip
     domain="${ip}"
 
-    wget -N ${singbox_anytls_url} -O config.json
+    wget -q ${singbox_anytls_url} -O config.json
     judge "AnyTLS 配置文件下载"
 
     sed -i "s~\${password}~$password~" config.json
@@ -1535,7 +1535,7 @@ singbox_vless_reality_h2() {
     gen_short_id
     get_public_ip
 
-    wget -N ${singbox_vless_reality_h2_url} -O ${singbox_cfg}
+    wget -q ${singbox_vless_reality_h2_url} -O ${singbox_cfg}
     judge "配置文件下载"
 
     sed -i "s~\${password}~$password~" ${singbox_cfg}
@@ -1564,7 +1564,7 @@ singbox_vless_reality_grpc() {
     gen_short_id
     get_public_ip
 
-    wget -N ${singbox_vless_reality_grpc_url} -O ${singbox_cfg}
+    wget -q ${singbox_vless_reality_grpc_url} -O ${singbox_cfg}
     judge "配置文件下载"
 
     sed -i "s~\${password}~$password~" ${singbox_cfg}
@@ -1595,7 +1595,7 @@ singbox_vless_reality_tcp() {
     gen_short_id
     get_public_ip
 
-    wget -N ${singbox_vless_reality_tcp_url} -O ${singbox_cfg}
+    wget -q ${singbox_vless_reality_tcp_url} -O ${singbox_cfg}
     judge "配置文件下载"
 
     sed -i "s~\${password}~$password~" ${singbox_cfg}
@@ -1661,7 +1661,7 @@ singbox_shadowsocket() {
       ;;
     esac
 
-    wget -N ${singbox_ss_config_url} -O config.json
+    wget -q ${singbox_ss_config_url} -O config.json
     judge "配置文件下载"
     sed -i "s~\${method}~$ss_method~" config.json
     sed -i "s~\${password}~$password~" config.json
@@ -1690,7 +1690,7 @@ singbox_redirect() {
     printf "输入转发的目标端口: "
     read -r re_port
 
-    wget -N ${singbox_redirect_config_url} -O config.json
+    wget -q ${singbox_redirect_config_url} -O config.json
     judge "配置文件下载"
 
     sed -i "s~\${ip}~$re_ip~" config.json
@@ -1714,7 +1714,7 @@ singbox_hy2_append() {
     get_public_ip
     domain="${ip}"
 
-    wget -N ${singbox_hysteria2_append_url} -O append.json
+    wget -q ${singbox_hysteria2_append_url} -O append.json
     judge "配置文件下载"
 
     sed -i "s~\${password}~$password~" append.json
@@ -1738,7 +1738,7 @@ singbox_anytls_append() {
     get_public_ip
     domain="${ip}"
 
-    wget -N ${singbox_anytls_append_url} -O append.json
+    wget -q ${singbox_anytls_append_url} -O append.json
     judge "AnyTLS 配置文件下载"
 
     sed -i "s~\${password}~$password~" append.json
@@ -1765,7 +1765,7 @@ singbox_reality_grpc_append() {
     gen_short_id
     get_public_ip
 
-    wget -N ${singbox_vless_reality_grpc_append_url} -O append.json
+    wget -q ${singbox_vless_reality_grpc_append_url} -O append.json
     judge "配置文件下载"
 
     sed -i "s~\${password}~$password~" append.json
@@ -1797,7 +1797,7 @@ singbox_reality_tcp_append() {
     gen_short_id
     get_public_ip
 
-    wget -N ${singbox_vless_reality_tcp_append_url} -O append.json
+    wget -q ${singbox_vless_reality_tcp_append_url} -O append.json
     judge "配置文件下载"
 
     sed -i "s~\${password}~$password~" append.json
@@ -1862,7 +1862,7 @@ singbox_shadowsocket_append() {
       ;;
     esac
 
-    wget -Nq ${singbox_ss_append_config_url} -O append.json
+    wget -q ${singbox_ss_append_config_url} -O append.json
     judge "配置文件下载"
 
     sed -i "s~\${password}~$password~" append.json
@@ -1892,7 +1892,7 @@ singbox_redirect_append() {
     printf "输入转发的目标端口: "
     read -r re_port
 
-    wget -Nq ${singbox_redirect_append_config_url} -O append.json
+    wget -q ${singbox_redirect_append_config_url} -O append.json
     judge "配置文件下载"
 
     sed -i "s~\${ip}~$re_ip~" append.json
@@ -2023,14 +2023,14 @@ mihomo_shadowsocket() {
 }
 
 mihomo_shadowsocket_config() {
-    wget -N ${mihomo_ss_config_url} -O tmp.yaml
+    wget -q ${mihomo_ss_config_url} -O tmp.yaml
     judge "配置文件下载"
     sed -i "s~\${method}~$ss_method~" tmp.yaml
     sed -i "s~\${password}~$password~" tmp.yaml
     sed -i "s~\${port}~$port~" tmp.yaml
     sed -i "s~\${name}~$domain~" tmp.yaml
     cp ${mihomo_cfg}/config.yaml ${mihomo_cfg}/bak.yaml
-    cat tmp.yaml >> ${mihomo_cfg}/config.yaml 
+    cat tmp.yaml >> ${mihomo_cfg}/config.yaml
     rm tmp.yaml
 }
 
@@ -2050,7 +2050,7 @@ mihomo_vless_reality_grpc() {
     gen_short_id
     get_public_ip
 
-    wget -N ${mihomo_vless_reality_grpc_url} -O tmp.yaml
+    wget -q ${mihomo_vless_reality_grpc_url} -O tmp.yaml
     judge "Mihomo Reality 配置文件下载"
 
     sed -i "s~\${password}~$password~" tmp.yaml
@@ -2063,12 +2063,12 @@ mihomo_vless_reality_grpc() {
     sed -i "s~\${reality_sni}~$reality_sni~" tmp.yaml
 
     cp ${mihomo_cfg}/config.yaml ${mihomo_cfg}/bak.yaml
-    cat tmp.yaml >> ${mihomo_cfg}/config.yaml 
+    cat tmp.yaml >> ${mihomo_cfg}/config.yaml
     rm tmp.yaml
 
     vless_reality_grpc_outbound_config
 
-    service_apply mihomo 
+    service_apply mihomo
 
     clash_config
     link="vless://$password@$ip:$port?encryption=none&security=reality&sni=$domain&sid=${short_id}&fp=safari&peer=$domain&allowInsecure=1&pbk=$public_key&type=grpc&serviceName=$ws_path&mode=multi#$ip"
@@ -2088,7 +2088,7 @@ mihomo_vless_reality_tcp() {
     gen_short_id
     get_public_ip
 
-    wget -N ${mihomo_vless_reality_tcp_url} -O tmp.yaml
+    wget -q ${mihomo_vless_reality_tcp_url} -O tmp.yaml
     judge "Mihomo Reality 配置文件下载"
 
     sed -i "s~\${password}~$password~" tmp.yaml
@@ -2100,12 +2100,12 @@ mihomo_vless_reality_tcp() {
     sed -i "s~\${reality_sni}~$reality_sni~" tmp.yaml
 
     cp ${mihomo_cfg}/config.yaml ${mihomo_cfg}/bak.yaml
-    cat tmp.yaml >> ${mihomo_cfg}/config.yaml 
+    cat tmp.yaml >> ${mihomo_cfg}/config.yaml
     rm tmp.yaml
 
     vless_reality_tcp_outbound_config
 
-    service_apply mihomo 
+    service_apply mihomo
 
     clash_config
     qx_config
@@ -2124,7 +2124,7 @@ mihomo_hysteria2() {
     get_public_ip
     domain=$ip
 
-    wget -N ${mihomo_hysteria2_url} -O tmp.yaml
+    wget -q ${mihomo_hysteria2_url} -O tmp.yaml
     judge "Mihomo Hysteria2 配置文件下载"
 
     sed -i "s~\${password}~$password~" tmp.yaml
@@ -2153,7 +2153,7 @@ mihomo_anytls() {
     get_public_ip
     domain=$ip
 
-    wget -N ${mihomo_anytls_url} -O tmp.yaml
+    wget -q ${mihomo_anytls_url} -O tmp.yaml
     judge "AnyTLS 配置文件下载"
 
     sed -i "s~\${password}~$password~" tmp.yaml
@@ -2187,7 +2187,7 @@ mihomo_redirect() {
     printf "输入转发的目标端口: "
     read -r re_port
 
-    wget -N ${mihomo_redirect_config_url} -O tmp.yaml
+    wget -q ${mihomo_redirect_config_url} -O tmp.yaml
     judge "配置文件下载"
 
     sed -i "s~\${ip}~$re_ip~" tmp.yaml
@@ -2196,10 +2196,10 @@ mihomo_redirect() {
     sed -i "s~1919810~$re_port~" tmp.yaml
 
     cp ${mihomo_cfg}/config.yaml ${mihomo_cfg}/bak.yaml
-    cat tmp.yaml >> ${mihomo_cfg}/config.yaml 
+    cat tmp.yaml >> ${mihomo_cfg}/config.yaml
     rm tmp.yaml
     service_apply mihomo
-    
+
     printf "${Green}IP为:${Font} ${ip}\n"
     printf "${Green}端口为:${Font} ${port}\n"
 }
@@ -2245,7 +2245,7 @@ judge() {
         error "$1 失败"
         exit 1
     fi
-} 
+}
 
 open_bbr() {
     is_root
@@ -2256,7 +2256,7 @@ open_bbr() {
     if [ "${ID}" = "debian" ] && [ "${VERSION_ID}" -ge 9 ]; then
         info "检测系统为 debian"
         mkdir -p /etc/sysctl.d
-        wget -N ${bbr_config_url} -O "${bbr_dropin}"
+        wget -q ${bbr_config_url} -O "${bbr_dropin}"
         judge "配置文件下载"
         sysctl --system >/dev/null 2>&1 || sysctl -p "${bbr_dropin}"
         info "输入一下命令检测是否成功安装"
@@ -2264,7 +2264,7 @@ open_bbr() {
     elif [ "${ID}" = "ubuntu" ] && [ "$(printf "%s" "${VERSION_ID}" | cut -d '.' -f1)" -ge 18 ]; then
         info "检测系统为 ubuntu"
         mkdir -p /etc/sysctl.d
-        wget -N ${bbr_config_url} -O "${bbr_dropin}"
+        wget -q ${bbr_config_url} -O "${bbr_dropin}"
         judge "配置文件下载"
         sysctl --system >/dev/null 2>&1 || sysctl -p "${bbr_dropin}"
         info "输入一下命令检测是否成功安装"
@@ -2275,7 +2275,7 @@ open_bbr() {
     elif [ "${ID}" = "alpine" ]; then
         info "检测系统为 alpine"
         mkdir -p /etc/sysctl.d
-        wget -N ${bbr_config_url} -O "${bbr_dropin}"
+        wget -q ${bbr_config_url} -O "${bbr_dropin}"
         judge "配置文件下载"
         sysctl --system >/dev/null 2>&1 || sysctl -p "${bbr_dropin}" || true
         info "输入一下命令检测是否成功安装"

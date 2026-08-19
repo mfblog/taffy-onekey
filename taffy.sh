@@ -102,6 +102,7 @@ mihomo_redirect_config_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/t
 
 mihomo_hysteria2_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Hysteria2/mihomo.yaml"
 mihomo_anytls_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/AnyTLS/mihomo.yaml"
+mihomo_mieru_url="${GH_PROXY}https://raw.githubusercontent.com/uerax/taffy-onekey/master/config/Mieru/mihomo.yaml"
 
 
 # MIHOMO URL END
@@ -563,6 +564,17 @@ clash_config() {
     udp: true
     sni: '$anytls_sni'
     skip-cert-verify: true"
+    ;;
+    "mieru")
+    clash_cfg="  - name: $domain
+    type: mieru
+    server: '$domain'
+    port: $port
+    transport: $transport
+    username: $username
+    password: $password
+    multiplexing: MULTIPLEXING_LOW
+    handshake-mode: HANDSHAKE_STANDARD"
     ;;
     "hysteria2")
     clash_cfg="  - name: $domain
@@ -2175,6 +2187,53 @@ mihomo_anytls_append() {
     mihomo_anytls
 }
 
+mihomo_mieru() {
+    set_port
+    port_check $port
+
+    printf "选择传输协议:\n"
+    menu_item "1" "TCP" "$Green"
+    menu_item "2" "UDP" "$Cyan"
+    printf "选择传输协议(默认为1 TCP)："
+    read -r transport_choice
+    case "$transport_choice" in
+    2)
+        transport="UDP"
+        ;;
+    *)
+        transport="TCP"
+        ;;
+    esac
+
+    protocol_type="mieru"
+    username="taffy"
+    password=$(tr -cd '0-9A-Za-z' < /dev/urandom | fold -w32 | head -n1)
+    get_public_ip
+    domain=$ip
+
+    wget -q ${mihomo_mieru_url} -O tmp.yaml
+    judge "Mieru 配置文件下载"
+
+    sed -i "s~\${username}~$username~" tmp.yaml
+    sed -i "s~\${password}~$password~" tmp.yaml
+    sed -i "s~\${ip}~$ip~" tmp.yaml
+    sed -i "s~\${port}~$port~" tmp.yaml
+    sed -i "s~\${transport}~$transport~" tmp.yaml
+
+    cp ${mihomo_cfg}/config.yaml ${mihomo_cfg}/bak.yaml
+    cat tmp.yaml >> ${mihomo_cfg}/config.yaml
+    rm tmp.yaml
+
+    service_apply mihomo
+
+    link="mieru://${username}:${password}@${domain}:${port}?transport=${transport}#${domain}"
+    clash_config
+}
+
+mihomo_mieru_append() {
+    mihomo_mieru
+}
+
 mihomo_redirect() {
     get_public_ip
     set_port
@@ -2677,7 +2736,7 @@ xray_select() {
 mihomo_select() {
     printf "${Green}选择安装的协议 ${Font}\n"
     printf "${Purple}-------------------------------- ${Font}\n"
-    
+
     # 2. 调用 menu_item 函数，保持数字与你给出的需求一致 (1, 2, 4, q)
     menu_item "1" "shadowsocket" "$Green"
     menu_item "2" "vless-reality-grpc" "$Cyan"
@@ -2685,6 +2744,7 @@ mihomo_select() {
     menu_item "4" "hysteria2" "$Cyan"
     menu_item "5" "redirect" "$Green"
     menu_item "6" "anytls" "$Cyan"
+    menu_item "7" "mieru" "$Cyan"
     menu_item "q" "不装了" "$Red"
 
     printf "${Purple}-------------------------------- ${Font}\n\n"
@@ -2713,6 +2773,9 @@ mihomo_select() {
     6)
         mihomo_anytls
         ;;
+    7)
+        mihomo_mieru
+        ;;
     q)
         exit
         ;;
@@ -2736,6 +2799,7 @@ select_mihomo_append_type() {
     menu_item "4" "hysteria2" "$Cyan"
     menu_item "5" "redirect" "$Green"
     menu_item "6" "anytls" "$Cyan"
+    menu_item "7" "mieru" "$Cyan"
     menu_item "q" "不装了" "$Red"
 
     printf "${Purple}-------------------------------- ${Font}\n\n"
@@ -2765,6 +2829,9 @@ select_mihomo_append_type() {
         ;;
     6)
         mihomo_anytls_append
+        ;;
+    7)
+        mihomo_mieru_append
         ;;
     q)
         exit

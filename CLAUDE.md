@@ -120,11 +120,11 @@ Self-signed TLS for Sing-box/Mihomo hy2 & anytls lives as `server.crt` / `server
 |------|-------------------------|---------------|
 | Xray | reality-tcp/grpc/h2, redirect, shadowsocket | ss, socks5, redirect, reality-tcp/grpc |
 | Sing-box | hy2, reality-tcp/grpc/h2, ss, **anytls**, redirect | ss, hy2, reality-tcp/grpc, **anytls**, redirect |
-| Mihomo | ss, reality-grpc/tcp, hy2, **anytls**, redirect | same set |
+| Mihomo | ss, reality-grpc/tcp, hy2, **anytls**, **mieru**, redirect | same set |
 
-README-advertised set: hysteria2, **anytls (Sing-box / Mihomo)**, vless reality (tcp/grpc/h2), shadowsocket-2022. Older dirs (`Trojan*`, `VLESS-WS-TLS`, `VMESS-WS-TLS`, `Naive`, …) are template leftovers, not the main menu path.
+README-advertised set: hysteria2, **anytls (Sing-box / Mihomo)**, **mieru (Mihomo)**, vless reality (tcp/grpc/h2), shadowsocket-2022. Older dirs (`Trojan*`, `VLESS-WS-TLS`, `VMESS-WS-TLS`, `Naive`, …) are template leftovers, not the main menu path.
 
-Template naming under `config/<Family>/`: `config.json`/`append.json` (Xray), `singbox.json`/`singbox_ap.json` (Sing-box), `mihomo.yaml` (listener fragment), occasional `nginx.conf` for legacy TLS fronts. `config/Clash/config.yaml` is Mihomo **server** base (listeners), not a client profile. **`config/AnyTLS/`** has `singbox.json` + `mihomo.yaml` only (no Xray).
+Template naming under `config/<Family>/`: `config.json`/`append.json` (Xray), `singbox.json`/`singbox_ap.json` (Sing-box), `mihomo.yaml` (listener fragment), occasional `nginx.conf` for legacy TLS fronts. `config/Clash/config.yaml` is Mihomo **server** base (listeners), not a client profile. **`config/AnyTLS/`** has `singbox.json` + `mihomo.yaml` only (no Xray). **`config/Mieru/`** has `mihomo.yaml` only (Mihomo only).
 
 ## Conventions when editing
 

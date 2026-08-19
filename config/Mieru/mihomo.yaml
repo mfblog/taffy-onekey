@@ -1,0 +1,8 @@
+
+- name: 'mieru-${ip}'
+  type: mieru
+  port: ${port}
+  listen: "::"
+  transport: ${transport}
+  users:
+    ${username}: "${password}"

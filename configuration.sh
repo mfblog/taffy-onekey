@@ -615,6 +615,26 @@ anytls_outbound_config() {
 }
 # anytls end
 
+# mieru start
+mihomo_mieru() {
+    local item="$1"
+    local i="$item"
+    local type=$(yq -r ".listeners[$i].type" $mihomo_cfg)
+    local port=$(yq -r ".listeners[$i].port" $mihomo_cfg)
+    local transport=$(yq -r ".listeners[$i].transport // \"TCP\"" $mihomo_cfg)
+    local username=$(yq -r ".listeners[$i].users | to_entries | .[0].key" $mihomo_cfg)
+    local password=$(yq -r ".listeners[$i].users | to_entries | .[0].value" $mihomo_cfg)
+    if [ -z "$username" ] || [ "$username" = "null" ]; then
+        username="taffy"
+    fi
+
+    local link="mieru://${username}:${password}@${ip}:${port}?transport=${transport}#${ip}"
+    local clash_cfg="  - name: $ip\n    type: mieru\n    server: '$ip'\n    port: $port\n    transport: $transport\n    username: $username\n    password: $password\n    multiplexing: MULTIPLEXING_LOW\n    handshake-mode: HANDSHAKE_STANDARD"
+
+    show_info
+}
+# mieru end
+
 xray_range() {
 
     if [ ! -e "$xray_cfg" ]; then
@@ -706,6 +726,9 @@ mihomo_range() {
                 ;;
             "anytls")
                 mihomo_anytls "$i"
+                ;;
+            "mieru")
+                mihomo_mieru "$i"
                 ;;
             *)
                 ;;

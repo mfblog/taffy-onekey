@@ -56,6 +56,7 @@ bash -c "$(curl -sL https://raw.githubusercontent.com/uerax/taffy-onekey/master/
 
 - Hysteria2 (Sing-box / Mihomo)
 - AnyTLS (Sing-box / Mihomo)
+- Mieru (Mihomo)
 - VLESS REALITY (TCP / gRPC / H2)
 - Shadowsocks 2022 / AEAD
 - Socks5 / Redirect 端口转发

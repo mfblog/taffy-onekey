@@ -571,6 +571,7 @@ clash_config() {
     server: '$domain'
     port: $port
     transport: $transport
+    udp: true
     username: $username
     password: $password
     multiplexing: MULTIPLEXING_LOW

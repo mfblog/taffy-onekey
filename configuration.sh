@@ -629,7 +629,7 @@ mihomo_mieru() {
     fi
 
     local link="mieru://${username}:${password}@${ip}:${port}?transport=${transport}#${ip}"
-    local clash_cfg="  - name: $ip\n    type: mieru\n    server: '$ip'\n    port: $port\n    transport: $transport\n    username: $username\n    password: $password\n    multiplexing: MULTIPLEXING_LOW\n    handshake-mode: HANDSHAKE_STANDARD"
+    local clash_cfg="  - name: $ip\n    type: mieru\n    udp: true\n    server: '$ip'\n    port: $port\n    transport: $transport\n    username: $username\n    password: $password\n    multiplexing: MULTIPLEXING_LOW\n    handshake-mode: HANDSHAKE_STANDARD"
 
     show_info
 }
